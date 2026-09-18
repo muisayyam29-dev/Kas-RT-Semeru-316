@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RT SEMERU DAYEUH 316 - Sistem Manajemen Digital</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+            .printable-area { width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col antialiased">
+
+    <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                        <i class="fa-solid fa-house-flag"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-tight text-white leading-tight">RT SEMERU DAYEUH 316</h1>
+                        <p class="text-xs text-slate-400">Sistem Pengelolaan Kas & Data Warga</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="hidden md:flex space-x-1">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-white bg-slate-800">
+                        <i class="fa-solid fa-chart-pie mr-2"></i>Dashboard
+                    </button>
+                    <button onclick="switchTab('warga')" id="nav-warga" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+                        <i class="fa-solid fa-users mr-2"></i>Data Warga & IPL
+                    </button>
+                    <button onclick="switchTab('keuangan')" id="nav-keuangan" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+                        <i class="fa-solid fa-wallet mr-2"></i>Kas & Transaksi
+                    </button>
+                    <button onclick="switchTab('laporan')" id="nav-laporan" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:text-white hover:bg-slate-800">
+                        <i class="fa-solid fa-file-invoice-dollar mr-2"></i>Laporan Publik
+                    </button>
+                </nav>
+
+                <!-- Admin Status / Action Button -->
+                <div class="flex items-center space-x-2">
+                    <div id="adminBadge" class="hidden items-center bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold">
+                        <i class="fa-solid fa-shield-halved mr-1.5"></i> Admin
+                    </div>
+                    <button id="adminAuthBtn" onclick="toggleAdminAuth()" class="bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium transition shadow-sm flex items-center">
+                        <i class="fa-solid fa-lock mr-1.5" id="adminAuthIcon"></i>
+                        <span id="adminAuthText">Login Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div class="md:hidden border-t border-slate-800 bg-slate-900 px-2 pt-2 pb-3 space-x-1 flex justify-around text-xs">
+            <button onclick="switchTab('dashboard')" class="text-slate-300 py-1 px-2 rounded flex flex-col items-center">
+                <i class="fa-solid fa-chart-pie text-base mb-1"></i> Dashboard
+            </button>
+            <button onclick="switchTab('warga')" class="text-slate-300 py-1 px-2 rounded flex flex-col items-center">
+                <i class="fa-solid fa-users text-base mb-1"></i> Data Warga
+            </button>
+            <button onclick="switchTab('keuangan')" class="text-slate-300 py-1 px-2 rounded flex flex-col items-center">
+                <i class="fa-solid fa-wallet text-base mb-1"></i> Transaksi
+            </button>
+            <button onclick="switchTab('laporan')" class="text-slate-300 py-1 px-2 rounded flex flex-col items-center">
+                <i class="fa-solid fa-file-invoice-dollar text-base mb-1"></i> Laporan
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 no-print">
+        
+        <!-- ================= TAB 1: DASHBOARD ================= -->
+        <div id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Filter Bar Dashboard -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Ringkasan Sistem & Keuangan</h2>
+                    <p class="text-sm text-slate-500">Monitor kas, warga, dan partisipasi iuran bulanan.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="dashMonthFilter" onchange="renderDashboard()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <!-- Populated by JS -->
+                    </select>
+                    <select id="dashYearFilter" onchange="renderDashboard()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Card 1: Kas Utama -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-10 text-brand-700 text-7xl">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Saldo Kas Utama RT</p>
+                    <h3 class="text-2xl font-bold text-slate-900 mt-1" id="dashKasUtama">Rp 0</h3>
+                    <div class="mt-2 text-xs text-slate-500 flex items-center">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span>
+                        Akumulasi Alokasi Rp 50rb/IPL
+                    </div>
+                </div>
+
+                <!-- Card 2: Kas Bansos -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-10 text-indigo-700 text-7xl">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Saldo Kas Bansos</p>
+                    <h3 class="text-2xl font-bold text-indigo-600 mt-1" id="dashKasBansos">Rp 0</h3>
+                    <div class="mt-2 text-xs text-slate-500 flex items-center">
+                        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5"></span>
+                        Akumulasi Alokasi Rp 5rb/IPL
+                    </div>
+                </div>
+
+                <!-- Card 3: Total Kas Gabungan -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-10 text-blue-700 text-7xl">
+                        <i class="fa-solid fa-vault"></i>
+                    </div>
+                    <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Total Saldo Keuangan</p>
+                    <h3 class="text-2xl font-bold text-blue-600 mt-1" id="dashTotalKas">Rp 0</h3>
+                    <div class="mt-2 text-xs text-slate-500">
+                        Total Kas Utama + Bansos
+                    </div>
+                </div>
+
+                <!-- Card 4: Persentase Pembayaran IPL -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-10 text-amber-700 text-7xl">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                    </div>
+                    <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Pembayaran IPL Bulan Ini</p>
+                    <h3 class="text-2xl font-bold text-amber-600 mt-1" id="dashIplStatus">0%</h3>
+                    <div class="mt-2 text-xs text-slate-500" id="dashIplDetail">
+                        0 dari 0 Warga Lunas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Bar Chart: Keuangan Bulanan -->
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-chart-column mr-2 text-brand-600"></i>Tren Arus Kas (6 Bulan Terakhir)</h3>
+                    <div class="h-64 relative">
+                        <canvas id="cashflowChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Doughnut Chart: Distribusi Status Rumah & Pembayaran -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-chart-pie mr-2 text-brand-600"></i>Status Rumah Warga</h3>
+                        <div class="h-52 relative">
+                            <canvas id="houseStatusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between text-xs text-slate-500" id="totalHouseSummary">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: DATA WARGA & IPL ================= -->
+        <div id="tab-warga" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Direktori Data Warga & Tagihan IPL</h2>
+                    <p class="text-sm text-slate-500">Kelola data warga, status iuran bulanan, dan pengiriman bukti pembayaran.</p>
+                </div>
+                <div>
+                    <button onclick="openResidentModal()" class="admin-only bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm flex items-center transition">
+                        <i class="fa-solid fa-user-plus mr-2"></i> Tambah Data Warga
+                    </button>
+                    <span class="admin-hidden text-xs text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 inline-block">
+                        <i class="fa-solid fa-lock mr-1"></i> Login Admin untuk Menambah/Mengedit Data
+                    </span>
+                </div>
+            </div>
+
+            <!-- Search & Filters for Warga -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cari No. Rumah / Blok / Nama</label>
+                    <div class="relative">
+                        <input type="text" id="searchWargaInput" onkeyup="renderWargaTable()" placeholder="Contoh: Blok A / A-12..." class="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Filter Blok</label>
+                    <select id="filterBlokSelect" onchange="renderWargaTable()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <option value="">Semua Blok</option>
+                        <option value="Blok A">Blok A</option>
+                        <option value="Blok B">Blok B</option>
+                        <option value="Blok C">Blok C</option>
+                        <option value="Blok D">Blok D</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Bulan & Tahun Pembayaran</label>
+                    <div class="flex space-x-1">
+                        <select id="filterMonthIpl" onchange="renderWargaTable()" class="w-1/2 bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        </select>
+                        <select id="filterYearIpl" onchange="renderWargaTable()" class="w-1/2 bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Status Pembayaran IPL</label>
+                    <select id="filterStatusIpl" onchange="renderWargaTable()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <option value="">Semua Status</option>
+                        <option value="PAID">Sudah Bayar</option>
+                        <option value="UNPAID">Belum Bayar</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Warga Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-100 text-slate-700 uppercase font-semibold text-xs border-b border-slate-200">
+                            <tr>
+                                <th class="px-4 py-3">No. Rumah / Blok</th>
+                                <th class="px-4 py-3">Nama Warga</th>
+                                <th class="px-4 py-3">No. Whatsapp</th>
+                                <th class="px-4 py-3">Status Rumah</th>
+                                <th class="px-4 py-3">Tipe IPL</th>
+                                <th class="px-4 py-3 text-center">Status IPL (Bulan Ini)</th>
+                                <th class="px-4 py-3 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wargaTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: KAS & TRANSAKSI ================= -->
+        <div id="tab-keuangan" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Manajemen Transaksi & Pembayaran IPL</h2>
+                    <p class="text-sm text-slate-500">Catat pembayaran iuran IPL warga atau pengeluaran operasional/bansos RT.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="openPayIplModal()" class="admin-only bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition flex items-center">
+                        <i class="fa-solid fa-hand-holding-dollar mr-2"></i> Bayar IPL Warga
+                    </button>
+                    <button onclick="openExpenseModal()" class="admin-only bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition flex items-center">
+                        <i class="fa-solid fa-minus-circle mr-2"></i> Catat Pengeluaran
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transaction History Filters -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-semibold text-slate-700">Filter Kas:</span>
+                    <select id="transKasFilter" onchange="renderTransactionTable()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="ALL">Semua Kas</option>
+                        <option value="UTAMA">Kas Utama RT</option>
+                        <option value="BANSOS">Kas Bansos</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-semibold text-slate-700">Periode:</span>
+                    <select id="transMonthFilter" onchange="renderTransactionTable()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm"></select>
+                    <select id="transYearFilter" onchange="renderTransactionTable()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm"></select>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-100 text-slate-700 uppercase font-semibold text-xs border-b border-slate-200">
+                            <tr>
+                                <th class="px-4 py-3">Tanggal</th>
+                                <th class="px-4 py-3">Kategori / Sumber</th>
+                                <th class="px-4 py-3">Keterangan</th>
+                                <th class="px-4 py-3">Kas Tujuan</th>
+                                <th class="px-4 py-3 text-right">Nominal</th>
+                                <th class="px-4 py-3 text-center">Bukti / Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: LAPORAN PUBLIK ================= -->
+        <div id="tab-laporan" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Laporan Transparansi Keuangan RT</h2>
+                    <p class="text-sm text-slate-500">Dapat dilihat oleh seluruh warga RT SEMERU DAYEUH 316 secara terbuka.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <select id="lapMonthFilter" onchange="renderLaporanPublik()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold">
+                    </select>
+                    <select id="lapYearFilter" onchange="renderLaporanPublik()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold">
+                    </select>
+                    <button onclick="printLaporanKeuangan()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center shadow-sm">
+                        <i class="fa-solid fa-print mr-2"></i> Print Laporan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Report Content Preview -->
+            <div id="laporanContainer" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+                <!-- JS Inject Content Here -->
+            </div>
+        </div>
+
+    </main>
+
+    
+    <!-- Modal 1: Admin Login PIN -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl mb-2">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Otentikasi Pengurus RT</h3>
+                <p class="text-xs text-slate-500">Masukkan PIN Admin untuk mengakses fitur edit & tambah data.</p>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">PIN / Password Admin</label>
+                <input type="password" id="adminPinInput" placeholder="Default PIN: 1234" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-center text-xl tracking-widest focus:ring-brand-500 focus:border-brand-500">
+                <p id="pinErrorMsg" class="text-xs text-rose-500 mt-1 hidden text-center">PIN salah! Silakan coba lagi.</p>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeAdminModal()" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg font-semibold text-sm">Batal</button>
+                <button onclick="verifyAdminPin()" class="w-1/2 bg-brand-600 hover:bg-brand-700 text-white py-2 rounded-lg font-semibold text-sm">Masuk</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Form Input / Edit Warga -->
+    <div id="residentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-900" id="resModalTitle">Tambah Data Warga</h3>
+                <button onclick="closeResidentModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="residentForm" onsubmit="handleSaveResident(event)" class="space-y-3">
+                <input type="hidden" id="resId">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">No. Rumah / Blok *</label>
+                        <input type="text" id="resNoRumah" placeholder="A-12 / B-05" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                        <input type="text" id="resNama" placeholder="Nama Warga" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">No. HP / WhatsApp *</label>
+                        <input type="text" id="resHp" placeholder="08123456789" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Lahir</label>
+                        <input type="date" id="resTglLahir" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Agama</label>
+                        <select id="resAgama" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                            <option value="Islam">Islam</option>
+                            <option value="Kristen">Kristen</option>
+                            <option value="Katolik">Katolik</option>
+                            <option value="Hindu">Hindu</option>
+                            <option value="Buddha">Buddha</option>
+                            <option value="Konghucu">Konghucu</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status Kepemilikan Rumah</label>
+                        <select id="resStatusRumah" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                            <option value="Milik Sendiri">Milik Sendiri</option>
+                            <option value="Sewa / Kontrak">Sewa / Kontrak</option>
+                            <option value="Kosong">Kosong / Tidak Dihuni</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Status Pembayaran IPL Default</label>
+                    <select id="resStatusIplType" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                        <option value="Iuran Normal">Iuran Normal (Rp 55.000 / bln)</option>
+                        <option value="Iuran Bersubsidi">Iuran Bersubsidi (Rp 35.000 / bln)</option>
+                        <option value="Iuran Rumah Kosong">Iuran Rumah Kosong (Rp 25.000 / bln)</option>
+                        <option value="Iuran Non Bansos">Iuran Non Bansos (Rp 50.000 / bln)</option>
+                    </select>
+                    <p class="text-[11px] text-slate-500 mt-1">*Iuran Normal otomatis membagi Rp 50.000 ke Kas Utama dan Rp 5.000 ke Kas Bansos.</p>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t">
+                    <button type="button" onclick="closeResidentModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold text-sm">Batal</button>
+                    <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg font-semibold text-sm">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Bayar IPL Warga -->
+    <div id="payIplModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-900">Form Pembayaran IPL Warga</h3>
+                <button onclick="closePayIplModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="payIplForm" onsubmit="handlePayIplSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Warga / Rumah *</label>
+                    <select id="payResidentId" onchange="updateIplCalculationPreview()" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                        <!-- JS Options -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Bulan *</label>
+                        <select id="payMonth" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tahun *</label>
+                        <select id="payYear" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500"></select>
+                    </div>
+                </div>
+
+                <!-- Automatic Split Breakdown Box -->
+                <div class="bg-brand-50/70 border border-brand-200 rounded-xl p-3 space-y-1.5 text-xs text-brand-900">
+                    <p class="font-bold flex items-center"><i class="fa-solid fa-calculator mr-1.5 text-brand-600"></i> Rincian Pembagian Otomatis Kas:</p>
+                    <div class="flex justify-between">
+                        <span>Tipe Pembayaran:</span>
+                        <span id="previewIplType" class="font-medium">Iuran Normal</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Total Bayar IPL:</span>
+                        <span id="previewTotalIpl" class="font-bold text-slate-900">Rp 55.000</span>
+                    </div>
+                    <hr class="border-brand-200">
+                    <div class="flex justify-between text-slate-700">
+                        <span>-> Masuk Kas Utama RT:</span>
+                        <span id="previewKasUtama" class="font-semibold text-emerald-700">Rp 50.000</span>
+                    </div>
+                    <div class="flex justify-between text-slate-700">
+                        <span>-> Masuk Kas Bansos:</span>
+                        <span id="previewKasBansos" class="font-semibold text-indigo-700">Rp 5.000</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t">
+                    <button type="button" onclick="closePayIplModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold text-sm">Batal</button>
+                    <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg font-semibold text-sm">Proses & Simpan Transaksi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Pengeluaran Kas (Termasuk Pengeluaran Bansos) -->
+    <div id="expenseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-900">Catat Pengeluaran Kas</h3>
+                <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="expenseForm" onsubmit="handleExpenseSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Pengeluaran *</label>
+                    <select id="expCategory" onchange="toggleExpenseKasNotice()" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                        <option value="Operasional RT">Operasional & Kebersihan RT</option>
+                        <option value="Keamanan">Keamanan & Keamanan Lingkungan</option>
+                        <option value="Bansos">Bantuan Sosial (Bansos Warga)</option>
+                        <option value="Perbaikan">Perbaikan Fasilitas Umum</option>
+                        <option value="Lain-Lain">Lain-Lain</option>
+                    </select>
+                </div>
+
+                <!-- Special Warning Notice for Bansos Category -->
+                <div id="bansosNotice" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-900 p-3 rounded-xl text-xs flex items-start space-x-2">
+                    <i class="fa-solid fa-circle-info text-indigo-600 mt-0.5"></i>
+                    <div>
+                        <p class="font-semibold">Potong Kas Bansos</p>
+                        <p class="text-indigo-700">Pengeluaran kategori <strong>Bansos</strong> secara otomatis akan mengurangi saldo <strong>Kas Bansos RT</strong>.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan / Deskripsi *</label>
+                    <input type="text" id="expDesc" placeholder="Contoh: Bantuan duka warga Blok B / Pembelian lampu jalan" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nominal (Rp) *</label>
+                    <input type="number" id="expAmount" min="1000" placeholder="50000" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Transaksi</label>
+                    <input type="date" id="expDate" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-brand-500">
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t">
+                    <button type="button" onclick="closeExpenseModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold text-sm">Batal</button>
+                    <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-lg font-semibold text-sm">Simpan Pengeluaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5: Preview & Print Kwitansi Pembayaran -->
+    <div id="receiptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3 no-print">
+                <h3 class="text-lg font-bold text-slate-900">Bukti Pembayaran IPL</h3>
+                <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- Printable Receipt Card -->
+            <div id="receiptContent" class="printable-area border border-slate-200 p-5 rounded-xl space-y-4 bg-slate-50/50">
+                <!-- JS Rendered -->
+            </div>
+
+            <div class="flex justify-between space-x-2 pt-2 no-print">
+                <button onclick="sendReceiptToWhatsappCurrent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center">
+                    <i class="fa-brands fa-whatsapp text-sm mr-1.5"></i> Kirim WA
+                </button>
+                <div class="flex space-x-2">
+                    <button onclick="closeReceiptModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-semibold">Tutup</button>
+                    <button onclick="window.print()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center">
+                        <i class="fa-solid fa-print mr-1.5"></i> Cetak / PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="printableReportArea" class="print-only p-8 bg-white text-slate-900">
+        <!-- Rendered dynamically during window.print() -->
+    </div>
+
+    <script>
+        // Default Constants & State Variables
+        const DEFAULT_PIN = "1234";
+        const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        let isAdminLoggedIn = false;
+        let currentReceiptTransaction = null;
+        
+        let residents = [];
+        let transactions = [];
+
+        // Seed Data Generator (Initial state if LocalStorage empty)
+        function initSeedData() {
+            const savedWarga = localStorage.getItem('RT316_WARGA');
+            const savedTrans = localStorage.getItem('RT316_TRANS');
+
+            if (!savedWarga) {
+                residents = [
+                    { id: 'w1', noRumah: 'A-01', nama: 'Budi Santoso', hp: '081234567890', tglLahir: '1985-04-12', agama: 'Islam', statusRumah: 'Milik Sendiri', statusIplType: 'Iuran Normal' },
+                    { id: 'w2', noRumah: 'A-02', nama: 'Hendra Gunawan', hp: '081298765432', tglLahir: '1990-08-20', agama: 'Kristen', statusRumah: 'Milik Sendiri', statusIplType: 'Iuran Normal' },
+                    { id: 'w3', noRumah: 'B-05', nama: 'Siti Rahmawati', hp: '085678901234', tglLahir: '1988-11-05', agama: 'Islam', statusRumah: 'Sewa / Kontrak', statusIplType: 'Iuran Normal' },
+                    { id: 'w4', noRumah: 'B-06', nama: 'Agus Setiawan', hp: '081311223344', tglLahir: '1979-01-15', agama: 'Islam', statusRumah: 'Milik Sendiri', statusIplType: 'Iuran Bersubsidi' },
+                    { id: 'w5', noRumah: 'C-10', nama: 'Rumah Kosong C-10', hp: '0800000000', tglLahir: '2000-01-01', agama: 'Islam', statusRumah: 'Kosong', statusIplType: 'Iuran Rumah Kosong' },
+                    { id: 'w6', noRumah: 'C-12', nama: 'Dewi Lestari', hp: '081899001122', tglLahir: '1992-06-30', agama: 'Katolik', statusRumah: 'Milik Sendiri', statusIplType: 'Iuran Non Bansos' }
+                ];
+                saveWargaToStorage();
+            } else {
+                residents = JSON.parse(savedWarga);
+            }
+
+            if (!savedTrans) {
+                const now = new Date();
+                const curM = now.getMonth() + 1;
+                const curY = now.getFullYear();
+
+                transactions = [
+                    { id: 't1', type: 'INCOME', category: 'IPL', residentId: 'w1', resNama: 'Budi Santoso', noRumah: 'A-01', month: curM, year: curY, amountTotal: 55000, amountUtama: 50000, amountBansos: 5000, iplType: 'Iuran Normal', date: `${curY}-${String(curM).padStart(2, '0')}-02` },
+                    { id: 't2', type: 'INCOME', category: 'IPL', residentId: 'w2', resNama: 'Hendra Gunawan', noRumah: 'A-02', month: curM, year: curY, amountTotal: 55000, amountUtama: 50000, amountBansos: 5000, iplType: 'Iuran Normal', date: `${curY}-${String(curM).padStart(2, '0')}-03` },
+                    { id: 't3', type: 'INCOME', category: 'IPL', residentId: 'w3', resNama: 'Siti Rahmawati', noRumah: 'B-05', month: curM, year: curY, amountTotal: 55000, amountUtama: 50000, amountBansos: 5000, iplType: 'Iuran Normal', date: `${curY}-${String(curM).padStart(2, '0')}-05` },
+                    { id: 't4', type: 'EXPENSE', category: 'Operasional RT', desc: 'Pembayaran Listrik Pos Ronda & Kebersihan', targetKas: 'UTAMA', amount: 150000, date: `${curY}-${String(curM).padStart(2, '0')}-06` },
+                    { id: 't5', type: 'EXPENSE', category: 'Bansos', desc: 'Bantuan Penjengukan Warga Sakit (B-05)', targetKas: 'BANSOS', amount: 100000, date: `${curY}-${String(curM).padStart(2, '0')}-08` }
+                ];
+                saveTransToStorage();
+            } else {
+                transactions = JSON.parse(savedTrans);
+            }
+        }
+
+        function saveWargaToStorage() {
+            localStorage.setItem('RT316_WARGA', JSON.stringify(residents));
+        }
+
+        function saveTransToStorage() {
+            localStorage.setItem('RT316_TRANS', JSON.stringify(transactions));
+        }
+
+        window.onload = function() {
+            initSeedData();
+            populateMonthYearDropdowns();
+            updateAdminUIState();
+            renderDashboard();
+            renderWargaTable();
+            renderTransactionTable();
+            renderLaporanPublik();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-white');
+                btn.classList.add('text-slate-300');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.classList.add('bg-slate-800', 'text-white');
+                activeNav.classList.remove('text-slate-300');
+            }
+
+            if(tabId === 'dashboard') renderDashboard();
+            if(tabId === 'warga') renderWargaTable();
+            if(tabId === 'keuangan') renderTransactionTable();
+            if(tabId === 'laporan') renderLaporanPublik();
+        }
+
+        function populateMonthYearDropdowns() {
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+
+            const monthDropdowns = ['dashMonthFilter', 'filterMonthIpl', 'transMonthFilter', 'payMonth', 'lapMonthFilter'];
+            const yearDropdowns = ['dashYearFilter', 'filterYearIpl', 'transYearFilter', 'payYear', 'lapYearFilter'];
+
+            monthDropdowns.forEach(id => {
+                const select = document.getElementById(id);
+                if(!select) return;
+                select.innerHTML = '';
+                MONTH_NAMES.forEach((m, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = idx + 1;
+                    opt.textContent = m;
+                    if(idx + 1 === currentMonth) opt.selected = true;
+                    select.appendChild(opt);
+                });
+            });
+
+            yearDropdowns.forEach(id => {
+                const select = document.getElementById(id);
+                if(!select) return;
+                select.innerHTML = '';
+                for(let y = currentYear - 2; y <= currentYear + 1; y++) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    if(y === currentYear) opt.selected = true;
+                    select.appendChild(opt);
+                }
+            });
+        }
+
+        function toggleAdminAuth() {
+            if (isAdminLoggedIn) {
+                isAdminLoggedIn = false;
+                updateAdminUIState();
+                alert('Anda telah keluar dari mode Admin.');
+            } else {
+                document.getElementById('adminPinInput').value = '';
+                document.getElementById('pinErrorMsg').classList.add('hidden');
+                document.getElementById('adminAuthModal').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('adminPinInput').value.trim();
+            if (pin === DEFAULT_PIN) {
+                isAdminLoggedIn = true;
+                closeAdminModal();
+                updateAdminUIState();
+            } else {
+                document.getElementById('pinErrorMsg').classList.remove('hidden');
+            }
+        }
+
+        function updateAdminUIState() {
+            const adminBadges = document.querySelectorAll('.admin-only');
+            const adminHidden = document.querySelectorAll('.admin-hidden');
+            const authText = document.getElementById('adminAuthText');
+            const authIcon = document.getElementById('adminAuthIcon');
+            const badge = document.getElementById('adminBadge');
+
+            if (isAdminLoggedIn) {
+                adminBadges.forEach(el => el.classList.remove('hidden'));
+                adminHidden.forEach(el => el.classList.add('hidden'));
+                authText.textContent = "Logout Admin";
+                authIcon.className = "fa-solid fa-unlock mr-1.5";
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            } else {
+                adminBadges.forEach(el => el.classList.add('hidden'));
+                adminHidden.forEach(el => el.classList.remove('hidden'));
+                authText.textContent = "Login Admin";
+                authIcon.className = "fa-solid fa-lock mr-1.5";
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+            }
+        }
+
+        // Helper Utility Functions
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+        }
+
+        function calculateBalances() {
+            let totalKasUtama = 0;
+            let totalKasBansos = 0;
+
+            transactions.forEach(t => {
+                if (t.type === 'INCOME') {
+                    totalKasUtama += (t.amountUtama || 0);
+                    totalKasBansos += (t.amountBansos || 0);
+                } else if (t.type === 'EXPENSE') {
+                    if (t.targetKas === 'BANSOS') {
+                        totalKasBansos -= (t.amount || 0);
+                    } else {
+                        totalKasUtama -= (t.amount || 0);
+                    }
+                }
+            });
+
+            return { totalKasUtama, totalKasBansos, totalKasCombined: totalKasUtama + totalKasBansos };
+        }
+
+        let cashflowChartInstance = null;
+        let houseChartInstance = null;
+
+        function renderDashboard() {
+            const { totalKasUtama, totalKasBansos, totalKasCombined } = calculateBalances();
+
+            document.getElementById('dashKasUtama').textContent = formatRupiah(totalKasUtama);
+            document.getElementById('dashKasBansos').textContent = formatRupiah(totalKasBansos);
+            document.getElementById('dashTotalKas').textContent = formatRupiah(totalKasCombined);
+
+            const m = parseInt(document.getElementById('dashMonthFilter').value);
+            const y = parseInt(document.getElementById('dashYearFilter').value);
+
+            // Calculate IPL Payment Rate
+            const totalResidents = residents.length;
+            let paidCount = 0;
+
+            residents.forEach(res => {
+                const paid = transactions.some(t => t.type === 'INCOME' && t.residentId === res.id && t.month === m && t.year === y);
+                if (paid) paidCount++;
+            });
+
+            const percent = totalResidents > 0 ? Math.round((paidCount / totalResidents) * 100) : 0;
+            document.getElementById('dashIplStatus').textContent = `${percent}%`;
+            document.getElementById('dashIplDetail').textContent = `${paidCount} dari ${totalResidents} Warga Lunas (${MONTH_NAMES[m-1]} ${y})`;
+
+            renderCharts();
+        }
+
+        function renderCharts() {
+            // Chart 1: Cashflow Last 6 Months
+            const ctx1 = document.getElementById('cashflowChart').getContext('2d');
+            if (cashflowChartInstance) cashflowChartInstance.destroy();
+
+            const labels = [];
+            const dataIn = [];
+            const dataOut = [];
+
+            const now = new Date();
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const m = d.getMonth() + 1;
+                const y = d.getFullYear();
+                labels.push(`${MONTH_NAMES[m-1].substring(0,3)} ${y}`);
+
+                let incomeMonth = 0;
+                let expenseMonth = 0;
+
+                transactions.forEach(t => {
+                    const tDate = new Date(t.date);
+                    if (tDate.getMonth() + 1 === m && tDate.getFullYear() === y) {
+                        if (t.type === 'INCOME') incomeMonth += (t.amountTotal || 0);
+                        if (t.type === 'EXPENSE') expenseMonth += (t.amount || 0);
+                    }
+                });
+
+                dataIn.push(incomeMonth);
+                dataOut.push(expenseMonth);
+            }
+
+            cashflowChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Pemasukan (Rp)', data: dataIn, backgroundColor: '#22c55e', borderRadius: 6 },
+                        { label: 'Pengeluaran (Rp)', data: dataOut, backgroundColor: '#f43f5e', borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            // Chart 2: House Status Distribution
+            const ctx2 = document.getElementById('houseStatusChart').getContext('2d');
+            if (houseChartInstance) houseChartInstance.destroy();
+
+            let own = 0, rent = 0, empty = 0;
+            residents.forEach(r => {
+                if (r.statusRumah === 'Milik Sendiri') own++;
+                else if (r.statusRumah === 'Sewa / Kontrak') rent++;
+                else empty++;
+            });
+
+            document.getElementById('totalHouseSummary').innerHTML = `
+                <span><i class="fa-solid fa-house text-emerald-500"></i> Sendiri: <b>${own}</b></span>
+                <span><i class="fa-solid fa-key text-blue-500"></i> Kontrak: <b>${rent}</b></span>
+                <span><i class="fa-solid fa-door-closed text-slate-400"></i> Kosong: <b>${empty}</b></span>
+            `;
+
+            houseChartInstance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Milik Sendiri', 'Sewa / Kontrak', 'Kosong'],
+                    datasets: [{
+                        data: [own, rent, empty],
+                        backgroundColor: ['#22c55e', '#3b82f6', '#94a3b8']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderWargaTable() {
+            const tbody = document.getElementById('wargaTableBody');
+            tbody.innerHTML = '';
+
+            const searchKey = document.getElementById('searchWargaInput').value.toLowerCase();
+            const filterBlok = document.getElementById('filterBlokSelect').value;
+            const filterM = parseInt(document.getElementById('filterMonthIpl').value);
+            const filterY = parseInt(document.getElementById('filterYearIpl').value);
+            const filterStatus = document.getElementById('filterStatusIpl').value;
+
+            const filtered = residents.filter(res => {
+                const matchSearch = res.noRumah.toLowerCase().includes(searchKey) || res.nama.toLowerCase().includes(searchKey);
+                const matchBlok = !filterBlok || res.noRumah.startsWith(filterBlok);
+
+                const isPaid = transactions.some(t => t.type === 'INCOME' && t.residentId === res.id && t.month === filterM && t.year === filterY);
+                let matchStatus = true;
+                if (filterStatus === 'PAID') matchStatus = isPaid;
+                if (filterStatus === 'UNPAID') matchStatus = !isPaid;
+
+                return matchSearch && matchBlok && matchStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Tidak ada data warga yang cocok.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(res => {
+                const isPaid = transactions.some(t => t.type === 'INCOME' && t.residentId === res.id && t.month === filterM && t.year === filterY);
+                const paymentTrans = transactions.find(t => t.type === 'INCOME' && t.residentId === res.id && t.month === filterM && t.year === filterY);
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-bold text-slate-800">${res.noRumah}</td>
+                    <td class="px-4 py-3 font-semibold text-slate-700">${res.nama}</td>
+                    <td class="px-4 py-3 text-slate-500">${res.hp}</td>
+                    <td class="px-4 py-3">
+                        <span class="text-xs px-2.5 py-1 rounded-full ${res.statusRumah === 'Milik Sendiri' ? 'bg-emerald-100 text-emerald-800' : res.statusRumah === 'Sewa / Kontrak' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'}">
+                            ${res.statusRumah}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-xs text-slate-600">${res.statusIplType}</td>
+                    <td class="px-4 py-3 text-center">
+                        ${isPaid ? 
+                            `<span class="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full inline-flex items-center"><i class="fa-solid fa-check mr-1"></i> Lunas</span>` : 
+                            `<span class="bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold px-2.5 py-1 rounded-full">Belum Bayar</span>`
+                        }
+                    </td>
+                    <td class="px-4 py-3 text-right space-x-1">
+                        ${isPaid ? `
+                            <button onclick="openReceiptModalByTransId('${paymentTrans.id}')" title="Cetak Bukti" class="text-blue-600 hover:text-blue-800 p-1.5"><i class="fa-solid fa-receipt"></i></button>
+                            <button onclick="sendWhatsAppReceipt('${res.id}', ${filterM}, ${filterY})" title="Kirim WA" class="text-emerald-600 hover:text-emerald-800 p-1.5"><i class="fa-brands fa-whatsapp"></i></button>
+                        ` : ''}
+                        <button onclick="editResident('${res.id}')" title="Edit Data" class="admin-only text-slate-600 hover:text-slate-900 p-1.5 ${isAdminLoggedIn ? '' : 'hidden'}"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteResident('${res.id}')" title="Hapus" class="admin-only text-rose-500 hover:text-rose-700 p-1.5 ${isAdminLoggedIn ? '' : 'hidden'}"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openResidentModal(resId = null) {
+            document.getElementById('residentForm').reset();
+            document.getElementById('resId').value = '';
+            document.getElementById('resModalTitle').textContent = 'Tambah Data Warga';
+
+            if (resId) {
+                const res = residents.find(r => r.id === resId);
+                if (res) {
+                    document.getElementById('resId').value = res.id;
+                    document.getElementById('resNoRumah').value = res.noRumah;
+                    document.getElementById('resNama').value = res.nama;
+                    document.getElementById('resHp').value = res.hp;
+                    document.getElementById('resTglLahir').value = res.tglLahir || '';
+                    document.getElementById('resAgama').value = res.agama || 'Islam';
+                    document.getElementById('resStatusRumah').value = res.statusRumah || 'Milik Sendiri';
+                    document.getElementById('resStatusIplType').value = res.statusIplType || 'Iuran Normal';
+                    document.getElementById('resModalTitle').textContent = 'Edit Data Warga';
+                }
+            }
+
+            document.getElementById('residentModal').classList.remove('hidden');
+        }
+
+        function closeResidentModal() {
+            document.getElementById('residentModal').classList.add('hidden');
+        }
+
+        function handleSaveResident(e) {
+            e.preventDefault();
+            const id = document.getElementById('resId').value;
+            const noRumah = document.getElementById('resNoRumah').value.trim().toUpperCase();
+            const nama = document.getElementById('resNama').value.trim();
+            const hp = document.getElementById('resHp').value.trim();
+            const tglLahir = document.getElementById('resTglLahir').value;
+            const agama = document.getElementById('resAgama').value;
+            const statusRumah = document.getElementById('resStatusRumah').value;
+            const statusIplType = document.getElementById('resStatusIplType').value;
+
+            if (id) {
+                const idx = residents.findIndex(r => r.id === id);
+                if (idx !== -1) {
+                    residents[idx] = { id, noRumah, nama, hp, tglLahir, agama, statusRumah, statusIplType };
+                }
+            } else {
+                const newRes = {
+                    id: 'w_' + Date.now(),
+                    noRumah, nama, hp, tglLahir, agama, statusRumah, statusIplType
+                };
+                residents.push(newRes);
+            }
+
+            saveWargaToStorage();
+            closeResidentModal();
+            renderWargaTable();
+            renderDashboard();
+        }
+
+        function editResident(id) {
+            openResidentModal(id);
+        }
+
+        function deleteResident(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data warga ini?')) {
+                residents = residents.filter(r => r.id !== id);
+                saveWargaToStorage();
+                renderWargaTable();
+                renderDashboard();
+            }
+        }
+
+        function openPayIplModal() {
+            const select = document.getElementById('payResidentId');
+            select.innerHTML = '<option value="">-- Pilih Warga / No. Rumah --</option>';
+            residents.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.id;
+                opt.textContent = `${r.noRumah} - ${r.nama} (${r.statusIplType})`;
+                select.appendChild(opt);
+            });
+
+            document.getElementById('payIplForm').reset();
+            updateIplCalculationPreview();
+            document.getElementById('payIplModal').classList.remove('hidden');
+        }
+
+        function closePayIplModal() {
+            document.getElementById('payIplModal').classList.add('hidden');
+        }
+
+        function getIplAmounts(iplType) {
+            let amountTotal = 55000;
+            let amountUtama = 50000;
+            let amountBansos = 5000;
+
+            if (iplType === 'Iuran Bersubsidi') {
+                amountTotal = 35000;
+                amountUtama = 30000;
+                amountBansos = 5000;
+            } else if (iplType === 'Iuran Rumah Kosong') {
+                amountTotal = 25000;
+                amountUtama = 25000;
+                amountBansos = 0;
+            } else if (iplType === 'Iuran Non Bansos') {
+                amountTotal = 50000;
+                amountUtama = 50000;
+                amountBansos = 0;
+            }
+
+            return { amountTotal, amountUtama, amountBansos };
+        }
+
+        function updateIplCalculationPreview() {
+            const resId = document.getElementById('payResidentId').value;
+            const res = residents.find(r => r.id === resId);
+
+            const iplType = res ? res.statusIplType : 'Iuran Normal';
+            const { amountTotal, amountUtama, amountBansos } = getIplAmounts(iplType);
+
+            document.getElementById('previewIplType').textContent = iplType;
+            document.getElementById('previewTotalIpl').textContent = formatRupiah(amountTotal);
+            document.getElementById('previewKasUtama').textContent = formatRupiah(amountUtama);
+            document.getElementById('previewKasBansos').textContent = formatRupiah(amountBansos);
+        }
+
+        function handlePayIplSubmit(e) {
+            e.preventDefault();
+            const resId = document.getElementById('payResidentId').value;
+            const m = parseInt(document.getElementById('payMonth').value);
+            const y = parseInt(document.getElementById('payYear').value);
+
+            if (!resId) {
+                alert('Pilih warga terlebih dahulu!');
+                return;
+            }
+
+            const res = residents.find(r => r.id === resId);
+            const isAlreadyPaid = transactions.some(t => t.type === 'INCOME' && t.residentId === resId && t.month === m && t.year === y);
+
+            if (isAlreadyPaid) {
+                alert(`Warga ${res.nama} (${res.noRumah}) sudah melunasi IPL untuk bulan ${MONTH_NAMES[m-1]} ${y}!`);
+                return;
+            }
+
+            const { amountTotal, amountUtama, amountBansos } = getIplAmounts(res.statusIplType);
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            const newTrans = {
+                id: 't_' + Date.now(),
+                type: 'INCOME',
+                category: 'IPL',
+                residentId: res.id,
+                resNama: res.nama,
+                noRumah: res.noRumah,
+                month: m,
+                year: y,
+                amountTotal,
+                amountUtama,
+                amountBansos,
+                iplType: res.statusIplType,
+                date: todayStr
+            };
+
+            transactions.unshift(newTrans);
+            saveTransToStorage();
+            closePayIplModal();
+
+            renderDashboard();
+            renderWargaTable();
+            renderTransactionTable();
+
+            // Auto-open Receipt
+            openReceiptModalByTransId(newTrans.id);
+        }
+
+        function openExpenseModal() {
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            toggleExpenseKasNotice();
+            document.getElementById('expenseModal').classList.remove('hidden');
+        }
+
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').classList.add('hidden');
+        }
+
+        function toggleExpenseKasNotice() {
+            const cat = document.getElementById('expCategory').value;
+            const notice = document.getElementById('bansosNotice');
+            if (cat === 'Bansos') {
+                notice.classList.remove('hidden');
+            } else {
+                notice.classList.add('hidden');
+            }
+        }
+
+        function handleExpenseSubmit(e) {
+            e.preventDefault();
+            const category = document.getElementById('expCategory').value;
+            const desc = document.getElementById('expDesc').value.trim();
+            const amount = parseInt(document.getElementById('expAmount').value);
+            const date = document.getElementById('expDate').value;
+
+            const targetKas = (category === 'Bansos') ? 'BANSOS' : 'UTAMA';
+
+            // Check if Kas balance is sufficient
+            const { totalKasUtama, totalKasBansos } = calculateBalances();
+            if (targetKas === 'BANSOS' && amount > totalKasBansos) {
+                alert(`Saldo Kas Bansos tidak mencukupi! (Saldo saat ini: ${formatRupiah(totalKasBansos)})`);
+                return;
+            }
+            if (targetKas === 'UTAMA' && amount > totalKasUtama) {
+                alert(`Saldo Kas Utama RT tidak mencukupi! (Saldo saat ini: ${formatRupiah(totalKasUtama)})`);
+                return;
+            }
+
+            const newTrans = {
+                id: 't_' + Date.now(),
+                type: 'EXPENSE',
+                category,
+                desc,
+                targetKas,
+                amount,
+                date
+            };
+
+            transactions.unshift(newTrans);
+            saveTransToStorage();
+            closeExpenseModal();
+
+            renderDashboard();
+            renderTransactionTable();
+            renderLaporanPublik();
+        }
+
+        function renderTransactionTable() {
+            const tbody = document.getElementById('transTableBody');
+            tbody.innerHTML = '';
+
+            const kasFilter = document.getElementById('transKasFilter').value;
+            const m = parseInt(document.getElementById('transMonthFilter').value);
+            const y = parseInt(document.getElementById('transYearFilter').value);
+
+            const filtered = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                const matchDate = (tDate.getMonth() + 1 === m && tDate.getFullYear() === y);
+
+                let matchKas = true;
+                if (kasFilter === 'UTAMA') {
+                    matchKas = (t.type === 'INCOME' && t.amountUtama > 0) || (t.type === 'EXPENSE' && t.targetKas === 'UTAMA');
+                } else if (kasFilter === 'BANSOS') {
+                    matchKas = (t.type === 'INCOME' && t.amountBansos > 0) || (t.type === 'EXPENSE' && t.targetKas === 'BANSOS');
+                }
+
+                return matchDate && matchKas;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Tidak ada transaksi pada periode ini.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                const isIncome = t.type === 'INCOME';
+
+                tr.innerHTML = `
+                    <td class="px-4 py-3 text-slate-500 text-xs">${t.date}</td>
+                    <td class="px-4 py-3 font-semibold text-slate-800">
+                        ${isIncome ? `<span class="text-emerald-600 mr-1"><i class="fa-solid fa-arrow-down-left"></i> IPL</span> ${t.noRumah}` : `<span class="text-rose-600 mr-1"><i class="fa-solid fa-arrow-up-right"></i> ${t.category}</span>`}
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">
+                        ${isIncome ? `Iuran IPL ${MONTH_NAMES[t.month-1]} ${t.year} (${t.resNama})` : t.desc}
+                    </td>
+                    <td class="px-4 py-3 text-xs">
+                        ${isIncome ? `
+                            <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded mr-1">Utama</span>
+                            ${t.amountBansos > 0 ? `<span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Bansos</span>` : ''}
+                        ` : `
+                            <span class="${t.targetKas === 'BANSOS' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-800'} px-2 py-0.5 rounded">${t.targetKas}</span>
+                        `}
+                    </td>
+                    <td class="px-4 py-3 text-right font-bold ${isIncome ? 'text-emerald-600' : 'text-rose-600'}">
+                        ${isIncome ? '+' + formatRupiah(t.amountTotal) : '-' + formatRupiah(t.amount)}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        ${isIncome ? `
+                            <button onclick="openReceiptModalByTransId('${t.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border border-slate-300">
+                                <i class="fa-solid fa-file-invoice mr-1"></i> Kwitansi
+                            </button>
+                        ` : '-'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openReceiptModalByTransId(transId) {
+            const t = transactions.find(tr => tr.id === transId);
+            if (!t) return;
+            currentReceiptTransaction = t;
+
+            const content = document.getElementById('receiptContent');
+            content.innerHTML = `
+                <div class="text-center border-b border-slate-200 pb-3">
+                    <h4 class="font-bold text-slate-900 text-base">RT SEMERU DAYEUH 316</h4>
+                    <p class="text-xs text-slate-500">BUKTI PEMBAYARAN IURAN PENGELOLAAN LINGKUNGAN (IPL)</p>
+                    <p class="text-[11px] font-mono text-slate-400 mt-1">NO: KWT/${t.year}/${String(t.month).padStart(2,'0')}/${t.noRumah}</p>
+                </div>
+
+                <div class="space-y-2 text-xs text-slate-700">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tgl Transaksi:</span>
+                        <span class="font-semibold">${t.date}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">No. Rumah / Blok:</span>
+                        <span class="font-bold text-slate-900">${t.noRumah}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Nama Pembayar:</span>
+                        <span class="font-semibold">${t.resNama}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Periode Iuran:</span>
+                        <span class="font-semibold text-brand-700">${MONTH_NAMES[t.month-1]} ${t.year}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tipe IPL:</span>
+                        <span>${t.iplType}</span>
+                    </div>
+                    <hr class="border-dashed border-slate-300">
+                    <div class="bg-slate-100 p-2.5 rounded-lg space-y-1">
+                        <div class="flex justify-between">
+                            <span>Alokasi Kas Utama:</span>
+                            <span class="font-mono">${formatRupiah(t.amountUtama)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Alokasi Kas Bansos:</span>
+                            <span class="font-mono">${formatRupiah(t.amountBansos)}</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-sm text-slate-900 pt-1 border-t border-slate-200">
+                            <span>TOTAL LUNAS:</span>
+                            <span>${formatRupiah(t.amountTotal)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-between items-end text-[11px] text-slate-500">
+                    <div class="text-center">
+                        <p class="text-[9px] text-emerald-600 font-bold border border-emerald-500 rounded px-1 mb-1 inline-block">TERVERIFIKASI LUNAS</p>
+                        <p>Sistem RT Dayeuh 316</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="mb-6">Pengurus RT 316</p>
+                        <p class="font-semibold text-slate-800">( Bendahara )</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('receiptModal').classList.remove('hidden');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').classList.add('hidden');
+        }
+
+        function sendWhatsAppReceipt(resId, month, year) {
+            const res = residents.find(r => r.id === resId);
+            const t = transactions.find(tr => tr.type === 'INCOME' && tr.residentId === resId && tr.month === month && tr.year === year);
+
+            if (!res || !t) {
+                alert('Data pembayaran tidak ditemukan.');
+                return;
+            }
+
+            let phone = res.hp.replace(/[^0-9]/g, '');
+            if (phone.startsWith('0')) {
+                phone = '62' + phone.substring(1);
+            }
+
+            const text = `*BUKTI PEMBAYARAN IPL RT SEMERU DAYEUH 316*\n\n` +
+                `Yth. Bpk/Ibu *${res.nama}* (${res.noRumah})\n` +
+                `Terima kasih, pembayaran IPL Anda telah kami terima dengan rincian:\n\n` +
+                `• Periode: *${MONTH_NAMES[month-1]} ${year}*\n` +
+                `• Tipe IPL: ${t.iplType}\n` +
+                `• Total Bayar: *${formatRupiah(t.amountTotal)}*\n` +
+                `  └ Kas Utama: ${formatRupiah(t.amountUtama)}\n` +
+                `  └ Kas Bansos: ${formatRupiah(t.amountBansos)}\n` +
+                `• Tanggal: ${t.date}\n\n` +
+                `_Pesan ini dibuat otomatis oleh Sistem Manajemen RT SEMERU DAYEUH 316._`;
+
+            const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function sendReceiptToWhatsappCurrent() {
+            if (currentReceiptTransaction) {
+                sendWhatsAppReceipt(currentReceiptTransaction.residentId, currentReceiptTransaction.month, currentReceiptTransaction.year);
+            }
+        }
+
+        function renderLaporanPublik() {
+            const container = document.getElementById('laporanContainer');
+            const m = parseInt(document.getElementById('lapMonthFilter').value);
+            const y = parseInt(document.getElementById('lapYearFilter').value);
+
+            // Calculate Monthly Financial Breakdown
+            let totalIncomeUtama = 0;
+            let totalIncomeBansos = 0;
+            let totalExpenseUtama = 0;
+            let totalExpenseBansos = 0;
+
+            const monthlyTrans = transactions.filter(t => {
+                const d = new Date(t.date);
+                return d.getMonth() + 1 === m && d.getFullYear() === y;
+            });
+
+            monthlyTrans.forEach(t => {
+                if (t.type === 'INCOME') {
+                    totalIncomeUtama += (t.amountUtama || 0);
+                    totalIncomeBansos += (t.amountBansos || 0);
+                } else if (t.type === 'EXPENSE') {
+                    if (t.targetKas === 'BANSOS') {
+                        totalExpenseBansos += (t.amount || 0);
+                    } else {
+                        totalExpenseUtama += (t.amount || 0);
+                    }
+                }
+            });
+
+            const { totalKasUtama, totalKasBansos, totalKasCombined } = calculateBalances();
+
+            container.innerHTML = `
+                <div class="text-center border-b pb-4">
+                    <h3 class="text-xl font-bold text-slate-900">LAPORAN KEUANGAN RT SEMERU DAYEUH 316</h3>
+                    <p class="text-sm font-semibold text-brand-700">PERIODE: ${MONTH_NAMES[m-1].toUpperCase()} ${y}</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Kas Utama Summary -->
+                    <div class="bg-emerald-50/50 border border-emerald-200 rounded-xl p-4">
+                        <h4 class="font-bold text-emerald-900 border-b border-emerald-200 pb-2 mb-2 flex items-center">
+                            <i class="fa-solid fa-building-columns mr-2"></i> KAS UTAMA RT
+                        </h4>
+                        <div class="space-y-1.5 text-xs text-slate-700">
+                            <div class="flex justify-between"><span>Pemasukan IPL Bulan Ini:</span><span class="font-semibold text-emerald-700">+ ${formatRupiah(totalIncomeUtama)}</span></div>
+                            <div class="flex justify-between"><span>Pengeluaran Bulan Ini:</span><span class="font-semibold text-rose-700">- ${formatRupiah(totalExpenseUtama)}</span></div>
+                            <div class="flex justify-between font-bold text-sm text-slate-900 pt-2 border-t"><span>Saldo Akhir Kas Utama:</span><span>${formatRupiah(totalKasUtama)}</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Kas Bansos Summary -->
+                    <div class="bg-indigo-50/50 border border-indigo-200 rounded-xl p-4">
+                        <h4 class="font-bold text-indigo-900 border-b border-indigo-200 pb-2 mb-2 flex items-center">
+                            <i class="fa-solid fa-hand-holding-heart mr-2"></i> KAS BANSOS WARGA
+                        </h4>
+                        <div class="space-y-1.5 text-xs text-slate-700">
+                            <div class="flex justify-between"><span>Alokasi Bansos IPL Bulan Ini:</span><span class="font-semibold text-indigo-700">+ ${formatRupiah(totalIncomeBansos)}</span></div>
+                            <div class="flex justify-between"><span>Pengeluaran Bansos Bulan Ini:</span><span class="font-semibold text-rose-700">- ${formatRupiah(totalExpenseBansos)}</span></div>
+                            <div class="flex justify-between font-bold text-sm text-slate-900 pt-2 border-t"><span>Saldo Akhir Kas Bansos:</span><span>${formatRupiah(totalKasBansos)}</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-3">Rincian Transaksi Bulan ${MONTH_NAMES[m-1]} ${y}:</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-600 border">
+                            <thead class="bg-slate-100 text-slate-800 border-b">
+                                <tr>
+                                    <th class="p-2.5">Tanggal</th>
+                                    <th class="p-2.5">Kategori / Sumber</th>
+                                    <th class="p-2.5">Keterangan</th>
+                                    <th class="p-2.5 text-right">Utama (Rp)</th>
+                                    <th class="p-2.5 text-right">Bansos (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                ${monthlyTrans.length === 0 ? `<tr><td colspan="5" class="text-center p-4 text-slate-400">Tidak ada rincian transaksi bulan ini.</td></tr>` : ''}
+                                ${monthlyTrans.map(t => {
+                                    const isInc = t.type === 'INCOME';
+                                    return `
+                                        <tr>
+                                            <td class="p-2.5">${t.date}</td>
+                                            <td class="p-2.5 font-semibold">${isInc ? 'IPL ' + t.noRumah : t.category}</td>
+                                            <td class="p-2.5">${isInc ? 'IPL Warga ' + t.resNama : t.desc}</td>
+                                            <td class="p-2.5 text-right ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
+                                                ${isInc ? '+' + formatRupiah(t.amountUtama) : (t.targetKas === 'UTAMA' ? '-' + formatRupiah(t.amount) : '-')}
+                                            </td>
+                                            <td class="p-2.5 text-right ${isInc ? 'text-indigo-600' : 'text-rose-600'}">
+                                                ${isInc ? '+' + formatRupiah(t.amountBansos) : (t.targetKas === 'BANSOS' ? '-' + formatRupiah(t.amount) : '-')}
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function printLaporanKeuangan() {
+            const reportHTML = document.getElementById('laporanContainer').innerHTML;
+            const printArea = document.getElementById('printableReportArea');
+            printArea.innerHTML = `
+                <div class="printable-area">
+                    ${reportHTML}
+                    <div class="mt-8 pt-4 border-t flex justify-between text-xs">
+                        <div>
+                            <p>Mengetahui,</p>
+                            <p class="font-bold mt-12">Ketua RT SEMERU DAYEUH 316</p>
+                        </div>
+                        <div>
+                            <p>Dibuat Oleh,</p>
+                            <p class="font-bold mt-12">Bendahara RT</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            window.print();
+        }
+    </script>
+</body>
+</html>
