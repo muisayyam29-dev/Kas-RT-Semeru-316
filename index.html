@@ -55,7 +55,8 @@
             <button onclick="switchTab('laporan')" id="tab-laporan" class="nav-tab px-3 py-1.5 rounded-md font-medium whitespace-nowrap hover:bg-indigo-700 text-indigo-100 flex items-center gap-2">
                 <i class="fa-solid fa-file-invoice-dollar"></i> Laporan
             </button>
-            <button onclick="switchTab('pengaturan')" id="tab-pengaturan" class="nav-tab px-3 py-1.5 rounded-md font-medium whitespace-nowrap hover:bg-indigo-700 text-indigo-100 flex items-center gap-2">
+            <!-- Menu Pengaturan Hanya Muncul Jika Login Admin -->
+            <button onclick="switchTab('pengaturan')" id="tab-pengaturan" class="admin-only nav-tab px-3 py-1.5 rounded-md font-medium whitespace-nowrap hover:bg-indigo-700 text-indigo-100 flex items-center gap-2 hidden">
                 <i class="fa-solid fa-gear"></i> Pengaturan
             </button>
         </div>
@@ -127,7 +128,6 @@
 
             <!-- Quick Table & Chart -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Status Pembayaran Warga Singkat -->
                 <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
                     <div class="flex justify-between items-center border-b pb-3">
                         <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
@@ -136,7 +136,6 @@
                         <span id="currentMonthYearBadge" class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-semibold"></span>
                     </div>
 
-                    <!-- Filter Dashboard Warga -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input type="text" id="dashSearchNoRumah" oninput="renderDashboardWargaTable()" placeholder="Cari No Rumah / Blok (contoh: A1 / A1-02)..." class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <select id="dashFilterStatus" onchange="renderDashboardWargaTable()" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -157,13 +156,11 @@
                                 </tr>
                             </thead>
                             <tbody id="dashWargaTbody" class="divide-y divide-slate-100">
-                                <!-- Dynamic JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Grafik Keuangan Ringkas -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
                     <div>
                         <h2 class="font-bold text-slate-800 text-base border-b pb-3 mb-4 flex items-center gap-2">
@@ -187,12 +184,11 @@
                     <h2 class="text-lg font-bold text-slate-800">Master Data Warga RT 316</h2>
                     <p class="text-xs text-slate-500">Kelola informasi data warga, status rumah, dan iuran IPL.</p>
                 </div>
-                <button onclick="openFormWarga()" class="admin-only px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
+                <button onclick="openFormWarga()" class="admin-only hidden px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
                     <i class="fa-solid fa-user-plus"></i> Tambah Warga Baru
                 </button>
             </div>
 
-            <!-- Filter & Pencarian Warga -->
             <div class="bg-white p-4 rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-3 gap-3">
                 <input type="text" id="wargaSearchKey" oninput="renderWargaTable()" placeholder="Cari Nama / No. Rumah / HP / Blok..." class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                 <select id="wargaFilterIPL" onchange="renderWargaTable()" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -210,7 +206,6 @@
                 </select>
             </div>
 
-            <!-- Table Data Warga -->
             <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left">
@@ -226,7 +221,6 @@
                             </tr>
                         </thead>
                         <tbody id="wargaTbody" class="divide-y divide-slate-100">
-                            <!-- Dynamic Content -->
                         </tbody>
                     </table>
                 </div>
@@ -241,16 +235,15 @@
                     <p class="text-xs text-slate-500">Pencatatan iuran bulanan, penerimaan non-IPL, dan pengeluaran RT.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="openFormTransaksi('masuk')" class="admin-only px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
+                    <button onclick="openFormTransaksi('masuk')" class="admin-only hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
                         <i class="fa-solid fa-plus-circle"></i> + Catat Transaksi Baru
                     </button>
-                    <button onclick="openFormTransaksi('keluar')" class="admin-only px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
+                    <button onclick="openFormTransaksi('keluar')" class="admin-only hidden px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
                         <i class="fa-solid fa-minus-circle"></i> - Pengeluaran Kas
                     </button>
                 </div>
             </div>
 
-            <!-- Filter Transaksi -->
             <div class="bg-white p-4 rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
                 <input type="month" id="filterTransBulan" onchange="renderTransaksiTable()" class="px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                 <select id="filterTransKategori" onchange="renderTransaksiTable()" class="px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -270,7 +263,6 @@
                 <input type="text" id="searchTransKey" oninput="renderTransaksiTable()" placeholder="Cari Keterangan / Warga..." class="px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
             </div>
 
-            <!-- Tabel Transaksi -->
             <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left">
@@ -286,7 +278,6 @@
                             </tr>
                         </thead>
                         <tbody id="transaksiTbody" class="divide-y divide-slate-100">
-                            <!-- Dynamic Content -->
                         </tbody>
                     </table>
                 </div>
@@ -301,7 +292,8 @@
                         <h2 class="text-lg font-bold text-slate-800">Laporan Keuangan RT</h2>
                         <p class="text-xs text-slate-500">Laporan arus kas dan pembayaran iuran bulanan/tahunan warga yang transparan.</p>
                     </div>
-                    <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
+                    <!-- Tombol Cetak Laporan Khusus Admin -->
+                    <button onclick="window.print()" class="admin-only hidden px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition flex items-center gap-2 shadow">
                         <i class="fa-solid fa-print"></i> Cetak Laporan (PDF)
                     </button>
                 </div>
@@ -316,14 +308,12 @@
 
             <!-- Area Printable Laporan Keuangan -->
             <div id="printableLaporanArea" class="bg-white p-8 rounded-xl border shadow-sm space-y-6">
-                <!-- Header Laporan Print -->
                 <div class="text-center border-b-2 border-slate-800 pb-4">
                     <h2 class="text-xl font-bold uppercase tracking-wider text-slate-900">RUKUN TETANGGA 316 SEMERU DAYEUH</h2>
                     <p class="text-sm text-slate-600">LAPORAN KEUANGAN & REKAPITULASI IURAN WARGA</p>
                     <p class="text-xs text-slate-500 mt-1" id="lapPeriodeText">Periode: Semua Periode</p>
                 </div>
 
-                <!-- Ringkasan Kas -->
                 <div class="grid grid-cols-3 gap-4 text-center">
                     <div class="border p-3 rounded-lg bg-slate-50">
                         <div class="text-xs text-slate-500">Total Uang Masuk</div>
@@ -339,7 +329,6 @@
                     </div>
                 </div>
 
-                <!-- Detail Kas Utama & Bansos -->
                 <div class="grid grid-cols-2 gap-4 text-xs border p-3 rounded-lg bg-slate-50">
                     <div>
                         <span class="font-bold">Saldo Akhir Kas Utama:</span> <span id="lapSaldoUtama" class="font-semibold text-slate-800">Rp 0</span>
@@ -349,7 +338,6 @@
                     </div>
                 </div>
 
-                <!-- Rincian Transaksi Laporan -->
                 <div class="space-y-2">
                     <h3 class="font-bold text-sm text-slate-800 border-b pb-1">Rincian Arus Kas Periode Ini</h3>
                     <table class="w-full text-xs text-left border-collapse border border-slate-300">
@@ -363,12 +351,10 @@
                             </tr>
                         </thead>
                         <tbody id="lapTableTbody">
-                            <!-- Dynamic Content -->
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Tanda Tangan -->
                 <div class="pt-8 grid grid-cols-2 text-center text-xs text-slate-700">
                     <div>
                         <p>Bendahara RT 316</p>
@@ -384,13 +370,12 @@
             </div>
         </section>
 
-        <!-- ================= PENGATURAN TAB ================= -->
+        <!-- ================= PENGATURAN TAB (KHUSUS ADMIN) ================= -->
         <section id="sec-pengaturan" class="space-y-6 hidden">
             <div class="bg-white p-5 rounded-xl border shadow-sm">
                 <h2 class="text-lg font-bold text-slate-800 border-b pb-3 mb-4">Pengaturan Sistem & Database</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Ubah PIN Admin -->
                     <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
                         <h3 class="font-bold text-indigo-800 flex items-center gap-2">
                             <i class="fa-solid fa-key"></i> Ubah PIN / Password Admin
@@ -414,7 +399,6 @@
                         </div>
                     </div>
 
-                    <!-- Ekspor / Impor Database -->
                     <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
                         <h3 class="font-bold text-indigo-800 flex items-center gap-2">
                             <i class="fa-solid fa-database"></i> Backup & Restore Database (JSON)
@@ -445,12 +429,9 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white border-t py-4 text-center text-xs text-slate-500 no-print mt-auto">
         &copy; 2026 RT SEMERU DAYEUH 316 - Sistem Manajemen Digital & Transparan
     </footer>
-
-    <!-- ================= MODAL DIALOGS ================= -->
 
     <!-- Modal Login Admin -->
     <div id="modalAdmin" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
@@ -561,16 +542,13 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori Transaksi</label>
                         <select id="transKategori" onchange="handleKategoriChange()" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                            <!-- Populated via JS -->
                         </select>
                     </div>
                 </div>
 
-                <!-- Field khusus pembayaran IPL warga -->
                 <div id="fieldSelectWarga">
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Warga Pembayar (IPL)</label>
                     <select id="transWargaId" onchange="autofillWargaIPL()" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                        <!-- Populated via JS -->
                     </select>
                 </div>
 
@@ -579,7 +557,6 @@
                     <input type="number" id="transNominal" required oninput="recalculateAlokasi()" class="w-full px-3 py-2 border rounded-lg text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
 
-                <!-- Info Alokasi Pembagian Kas -->
                 <div class="bg-indigo-50 border border-indigo-200 p-3 rounded-lg text-xs space-y-1">
                     <div class="font-semibold text-indigo-900">Alokasi Kas Otomatis:</div>
                     <div class="flex justify-between">
@@ -605,7 +582,7 @@
         </div>
     </div>
 
-    <!-- Modal Printable Struk / Bukti Pembayaran -->
+    <!-- Modal Printable Struk -->
     <div id="modalStruk" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full mx-4 space-y-4">
             <div class="no-print flex justify-between items-center border-b pb-2">
@@ -613,7 +590,6 @@
                 <button onclick="closeModal('modalStruk')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- Struk Printable Area -->
             <div id="printableStruk" class="bg-amber-50/50 p-6 rounded-xl border border-amber-200 space-y-4 font-mono text-xs">
                 <div class="text-center border-b border-dashed border-slate-400 pb-3">
                     <h4 class="font-bold text-sm text-slate-800">RT 316 SEMERU DAYEUH</h4>
@@ -663,9 +639,8 @@
         </div>
     </div>
 
-    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <!-- Script Application Logic -->
     <script>
-        // --- DATA INITIALIZATION & STORAGE KEY ---
         const STORAGE_WARGA = 'rt_semeru_warga';
         const STORAGE_TRANS = 'rt_semeru_transaksi';
         const STORAGE_PIN = 'rt_semeru_pin';
@@ -676,7 +651,6 @@
         let isAdminLoggedIn = false;
         let kasChart = null;
 
-        // Default Sample Data jika masih kosong
         const defaultWarga = [
             { id: 1, nama: "Budi Santoso", hp: "081234567890", noRumah: "A1-01", blok: "A1", tglLahir: "1985-05-15", agama: "Islam", statusRumah: "Tetap", statusIPL: "Iuran Normal", nominalIPL: 55000 },
             { id: 2, nama: "Ahmad Hidayat", hp: "085678901234", noRumah: "A1-02", blok: "A1", tglLahir: "1990-08-20", agama: "Islam", statusRumah: "Kontrak", statusIPL: "Iuran Bersubsidi", nominalIPL: 35000 },
@@ -688,7 +662,6 @@
             { id: 2, tanggal: "2026-09-05", tipe: "keluar", kategori: "Bansos", nominal: 100000, kasUtama: 0, kasBansos: 100000, keterangan: "Santunan Warga Sakit Blok B2", noRumah: "-", namaWarga: "-" }
         ];
 
-        // --- APP INIT ---
         window.onload = function() {
             loadDataFromStorage();
             setTodayDateInputs();
@@ -720,13 +693,17 @@
             document.getElementById('laporanPeriode').value = currentMonth;
             document.getElementById('filterTransBulan').value = currentMonth;
 
-            // Display Current Month Badge
             const options = { month: 'long', year: 'numeric' };
             document.getElementById('currentMonthYearBadge').textContent = new Date().toLocaleDateString('id-ID', options);
         }
 
-        // --- TAB NAVIGATION ---
         function switchTab(tabName) {
+            // Jika memilih menu pengaturan tapi belum login admin, cegah akses
+            if (tabName === 'pengaturan' && !isAdminLoggedIn) {
+                alert("Akses Ditolak: Hanya Admin yang dapat mengakses menu Pengaturan!");
+                return;
+            }
+
             const tabs = ['dashboard', 'warga', 'transaksi', 'laporan', 'pengaturan'];
             tabs.forEach(t => {
                 document.getElementById(`sec-${t}`).classList.add('hidden');
@@ -745,7 +722,6 @@
             if (tabName === 'laporan') generateLaporan();
         }
 
-        // --- RENDER ALL ---
         function renderAll() {
             renderDashboard();
             renderWargaTable();
@@ -753,11 +729,14 @@
             generateLaporan();
         }
 
-        // --- ADMIN LOGIN SECURITY ---
         function toggleAdminLogin() {
             if (isAdminLoggedIn) {
                 isAdminLoggedIn = false;
                 updateAdminUI();
+                // Jika sedang di tab pengaturan, kembalikan ke dashboard
+                if (!document.getElementById('sec-pengaturan').classList.contains('hidden')) {
+                    switchTab('dashboard');
+                }
                 alert("Anda telah keluar dari mode Admin.");
             } else {
                 document.getElementById('inputPinAdmin').value = '';
@@ -824,7 +803,6 @@
             document.getElementById('pinConfirm').value = '';
         }
 
-        // --- DASHBOARD CALCULATIONS & CHARTS ---
         function calculateBalances() {
             let totalKasUtama = 0;
             let totalKasBansos = 0;
@@ -852,7 +830,6 @@
             document.getElementById('dashKasBansos').textContent = formatRupiah(balances.bansos);
             document.getElementById('dashKasTotal').textContent = formatRupiah(balances.total);
 
-            // Calculate Stats Warga
             const totalWarga = dataWarga.length;
             const currentMonthStr = new Date().toISOString().slice(0, 7);
 
@@ -888,7 +865,6 @@
             tbody.innerHTML = '';
 
             dataWarga.forEach(w => {
-                // Filter No Rumah / Blok
                 const matchSearch = w.noRumah.toLowerCase().includes(searchNo) || w.nama.toLowerCase().includes(searchNo);
                 if (!matchSearch) return;
 
@@ -942,7 +918,6 @@
             });
         }
 
-        // --- WARGA MANAGEMENT ---
         function renderWargaTable() {
             const searchKey = document.getElementById('wargaSearchKey').value.toLowerCase();
             const filterIPL = document.getElementById('wargaFilterIPL').value;
@@ -1062,7 +1037,6 @@
             }
         }
 
-        // --- KAS & TRANSAKSI MANAGEMENT ---
         function openFormTransaksi(tipe = 'masuk') {
             document.getElementById('formTransaksi').reset();
             document.getElementById('transTipe').value = tipe;
@@ -1136,22 +1110,18 @@
 
             if (tipe === 'masuk') {
                 if (kategori === 'Iuran RT') {
-                    // OTOMATIS: 50.000 ke Utama & 5.000 ke Bansos jika nominal >= 55.000
                     if (nominal >= 55000) {
                         kasBansos = 5000;
                         kasUtama = nominal - 5000;
                     } else {
-                        // Jika iuran bersubsidi/dibawah 55.000, 100% masuk kas utama
                         kasUtama = nominal;
                         kasBansos = 0;
                     }
                 } else {
-                    // Non-IPL (Sumbangan/17an/THR) 100% Kas Utama
                     kasUtama = nominal;
                     kasBansos = 0;
                 }
             } else {
-                // Pengeluaran
                 if (kategori === 'Bansos') {
                     kasBansos = nominal;
                     kasUtama = 0;
@@ -1227,7 +1197,6 @@
 
             tbody.innerHTML = '';
 
-            // Sort Tanggal Terbaru
             const sorted = [...dataTransaksi].sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
 
             sorted.forEach(t => {
@@ -1280,7 +1249,6 @@
             }
         }
 
-        // --- LAPORAN KEUANGAN ---
         function generateLaporan() {
             const periode = document.getElementById('laporanPeriode').value;
             const tbody = document.getElementById('lapTableTbody');
@@ -1324,7 +1292,6 @@
             document.getElementById('lapSaldoBansos').textContent = formatRupiah(balances.bansos);
         }
 
-        // --- BUKTI BAYAR & PRINT STRUK ---
         function printStruk(transId) {
             const t = dataTransaksi.find(tr => tr.id === transId);
             if (!t) return;
@@ -1356,7 +1323,6 @@
             window.open(`https://wa.me/${cleanHp}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // --- DATABASE BACKUP & RESTORE ---
         function exportDatabase() {
             const db = {
                 warga: dataWarga,
@@ -1402,7 +1368,6 @@
             reader.readAsText(file);
         }
 
-        // --- UTILS ---
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
         }
